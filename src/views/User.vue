@@ -8,14 +8,14 @@
     >
       <template v-slot:action="{ record }">
         <span>
-          <a @click="EditUser(record)">编辑</a>
+          <a @click="EditUser(record)">編輯</a>
           <span v-if="record.user_deleted">
             <a-divider type="vertical" />
-            <a @click="DeleteUser(record)">复活</a>
+            <a @click="DeleteUser(record)">還原</a>
           </span>
           <span v-else>
             <a-divider type="vertical" />
-            <a @click="DeleteUser(record)">删除</a>
+            <a @click="DeleteUser(record)">刪除</a>
           </span>
         </span>
       </template>
@@ -24,7 +24,7 @@
       <div>
         <a-button type="primary" @click="showModal"> </a-button>
         <a-modal
-          title="修改用户信息"
+          title="修改用戶資訊"
           v-model:visible="visible"
           :confirm-loading="confirmLoading"
           @ok="handleOk"
@@ -32,15 +32,15 @@
           <p>
             <a-input
               v-model:value="userInfo.nickName"
-              placeholder="请输入昵称"
+              placeholder="請輸入暱稱"
             /><br /><br />
             <a-input
               v-model:value="userInfo.mobile"
-              placeholder="请输入手机号码"
+              placeholder="請輸入手機號碼"
             /><br /><br />
             <a-input
               v-model:value="userInfo.address"
-              placeholder="请输入收获地址"
+              placeholder="請輸入收貨地址"
             /><br /><br />
           </p>
         </a-modal>
@@ -59,17 +59,17 @@ export default {
   setup() {
     const columns = ref([
       {
-        title: "用户昵称",
+        title: "用戶名",
         dataIndex: "nickName",
         key: "nickName",
       },
       {
-        title: "手机号",
+        title: "手機號碼",
         dataIndex: "mobile",
         key: "mobile",
       },
       {
-        title: "收货地址",
+        title: "收貨地址",
         dataIndex: "address",
         key: "address",
       },
@@ -138,8 +138,10 @@ export default {
         visible.value = false;
         confirmLoading.value = false;
         isEdit = false;
-      }, 2000);
-      await GetUserList(current.value, page_size.value);
+      }, 500);
+      await GetUserList(current.value, page_size.value).then(() => {
+        message.info("操作成功");
+      });
     }
 
     function GetUserList(page, size) {
@@ -167,6 +169,7 @@ export default {
         console.log(record.userId);
         if (record.userId) {
           message.info("操作成功");
+          //更改頁面上的顯示
           record.user_deleted = !record.user_deleted;
           // GetUserList(current, page_size.value);
         }

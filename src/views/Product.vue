@@ -19,13 +19,13 @@
     </template>
     <template v-slot:action="{ record }">
       <span>
-        <a @click="EditProduct(record)">编辑</a>
+        <a @click="EditProduct(record)">編輯</a>
         <a-divider type="vertical" />
         <span v-if="record.isDeleted">
           <a @click="DeleteProduct(record)">上架</a>
         </span>
         <span v-else>
-          <a @click="DeleteProduct(record)">删除</a>
+          <a @click="DeleteProduct(record)">刪除</a>
         </span>
       </span>
     </template>
@@ -34,27 +34,27 @@
         <span class="title">商品ID:</span>{{ record.productId }}
       </p>
       <p class="hiddenContent">
-        <span class="title">商品简介:</span
+        <span class="title">商品簡介:</span
         >{{ record.productIntro == "" ? "无" : record.productIntro }}
       </p>
       <p class="hiddenContent">
-        <span class="title">商品分类:</span>{{ record.categoryId }}
+        <span class="title">商品分類:</span>{{ record.categoryId }}
       </p>
       <p class="hiddenContent">
         <span class="title">商品封面:</span>{{ record.productCoverImg }}
       </p>
       <p class="hiddenContent">
-        <span class="title">商品录播图:</span>{{ record.productBanner }}
+        <span class="title">商品輪播圖:</span>{{ record.productBanner }}
       </p>
       <p class="hiddenContent">
         <span class="title">商品Tag:</span>{{ record.tag }}
       </p>
       <p class="hiddenContent">
-        <span class="title">商品销售状态:</span
-        >{{ record.sellStatus == 0 ? "销售中" : "停止销售" }}
+        <span class="title">商品銷售狀態:</span
+        >{{ record.sellStatus == 0 ? "銷售中" : "停止銷售" }}
       </p>
       <p class="hiddenContent">
-        <span class="title">商品详细内容:</span
+        <span class="title">商品詳細內容:</span
         >{{ record.productDetailContent }}
       </p>
     </template>
@@ -63,30 +63,63 @@
     <div>
       <a-button type="primary" @click="showProductModal"> </a-button>
       <a-modal
-        title="修改商品信息"
+        title="修改商品資訊"
         v-model:visible="product_visible"
         :confirm-loading="confirmProductLoading"
         @ok="handleProductOk"
       >
         <p>
+          這邊的productInfo 後面要接後端API傳來的JSON 因此格式要對映好!
+          <br />
+          <br />
           <a-input
             v-model:value="productInfo.productName"
-            placeholder="请输入商品名称"
+            placeholder="請輸入商品名稱"
           />
           <br /><br />
           <a-input
             v-model:value="productInfo.originalPrice"
-            placeholder="请输入原始价格"
+            placeholder="請輸入原始價格"
           />
           <br /><br />
           <a-input
             v-model:value="productInfo.sellingPrice"
-            placeholder="请输入销售价格"
+            placeholder="請輸入銷售價格"
           />
           <br /><br />
           <a-input
             v-model:value="productInfo.stockNum"
-            placeholder="请输入库存"
+            placeholder="請輸入庫存"
+          />
+          <br /><br />
+          <a-input
+            v-model:value="productInfo.productIntro"
+            placeholder="請輸入商品簡介"
+          />
+          <br /><br />
+          <a-input
+            v-model:value="productInfo.productBanner"
+            placeholder="請輸入商品封面"
+          />
+          <br /><br />
+          <a-input
+            v-model:value="productInfo.productCoverImg"
+            placeholder="請輸入商品輪播圖"
+          />
+          <br /><br />
+          <a-input
+            v-model:value="productInfo.tag"
+            placeholder="請輸入商品Tag"
+          />
+          <br /><br />
+          <a-input
+            v-model:value="productInfo.sellStatus"
+            placeholder="請輸入商品銷售狀態"
+          />
+          <br /><br />
+          <a-input
+            v-model:value="productInfo.productDetailContent"
+            placeholder="請輸入商品銷售詳細內容"
           />
           <br /><br />
         </p>
@@ -104,23 +137,23 @@ export default {
   setup() {
     const columns = ref([
       {
-        title: "商品名称",
+        title: "商品名稱",
         dataIndex: "productName",
         key: "productName",
         slots: { title: "customTitle", customRender: "productName" },
       },
       {
-        title: "原始价格",
+        title: "原始價格",
         dataIndex: "originalPrice",
         key: "originalPrice",
       },
       {
-        title: "销售价格",
+        title: "銷售價格",
         dataIndex: "sellingPrice",
         key: "sellingPrice",
       },
       {
-        title: "库存",
+        title: "庫存",
         key: "stockNum",
         dataIndex: "stockNum",
         slots: { customRender: "stockNum" },
@@ -133,9 +166,18 @@ export default {
     ]);
     let productId = ref("");
     let productName = ref("");
+    let sellingStatus = ref("");
+    let productBanner = ref("");
+    let productCoverImg = ref("");
+    let productDetailContent = ref("");
+    let productIntro = ref("");
+    // categoryId = record.
+    // CategoryName: p.categoryName,
+    let tag = ref("");
     // let categoryId = ref("");
     let originalPrice = ref("");
     let sellingPrice = ref("");
+
     let stockNum = ref("");
     let confirmProductLoading = ref(false);
     let currentProduct = ref(1);
@@ -169,6 +211,7 @@ export default {
     }
 
     async function DeleteProduct(record) {
+      console.log(`productID是${productId}`);
       let productId = record.productId;
       await store.dispatch("Delete_Product", productId);
       GetProductList(currentProduct.value, page_size.value);
@@ -180,12 +223,9 @@ export default {
 
     async function EditProduct(record) {
       console.log("EditProduct");
+      console.log(`record=${record.productBanner}`);
       productId = record.productId;
-      productName = record.productName;
-      originalPrice = record.originalPrice;
-      sellingPrice = record.sellingPrice;
-      stockNum = record.stockNum;
-      // categoryId = record.categoryId;
+      // 利用ID再去尋找一次API取得新資料，
       await store.dispatch("Get_Product_Info", productId);
       showProductModal();
     }
@@ -202,14 +242,21 @@ export default {
 
     async function UpdateProduct() {
       let p = productInfo.value;
+      //取不同的名字，以便確認能放進去model中
       let param = {
         ProductId: p.productId,
+        sellingStatus: p.sellingStatus,
+        productBanner: p.imgCarousel,
+        productCoverImg: p.imgCover,
         ProductName: p.productName,
+        productDetailContent: p.sellingDetail,
+        productIntro: p.introduction,
         CategoryId: p.categoryId,
         CategoryName: p.categoryName,
         OriginalPrice: parseInt(p.originalPrice),
         SellingPrice: parseInt(p.sellingPrice),
         StockNum: parseInt(p.stockNum),
+        tag: p.Tag,
       };
       console.log(p);
       await store.dispatch("Update_Product", param);
@@ -232,6 +279,14 @@ export default {
       originalPrice,
       sellingPrice,
       stockNum,
+      sellingStatus,
+      productBanner,
+      productCoverImg,
+      productDetailContent,
+      productIntro,
+      // categoryId = record.
+      // CategoryName: p.categoryName,
+      tag,
     };
   },
 };

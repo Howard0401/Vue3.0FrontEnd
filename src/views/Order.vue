@@ -75,6 +75,8 @@
 <script>
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
+// import { useStore } from "./store";
+import { message } from "ant-design-vue";
 
 export default {
   name: "Order",
@@ -147,6 +149,7 @@ export default {
       let orderId = record.orderId;
       await store.dispatch("Delete_Order", orderId);
       GetOrderList(currentOrder.value, page_size.value);
+      message.info("操作成功");
     }
 
     function showOrderModal() {
@@ -154,13 +157,21 @@ export default {
     }
 
     async function handleOrderOk() {
+      // message.info("操作成功");
       await UpdateOrder();
       confirmOrderLoading.value = true;
       setTimeout(() => {
         order_visible.value = false;
         confirmOrderLoading.value = false;
-      }, 2000);
+      }, 500);
+      message.info("操作成功");
+      console.log(currentOrder.value);
+      console.log(page_size.value);
       GetOrderList(currentOrder.value, page_size.value);
+      // .catch((e) => {
+      //   console.log(e);
+      // })
+      // .then(() => {});
     }
 
     function EditOrder(record) {

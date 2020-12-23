@@ -9,7 +9,7 @@
       <template v-slot:action="{ record }">
         <span>
           <a @click="EditCategory(record)">编辑</a>
-          <span v-if="record.isDeleted">
+          <span v-if="record.category_deleted">
             <a-divider type="vertical" />
             <a @click="DeleteCategory(record)">上架</a>
           </span>
@@ -52,43 +52,44 @@
 <script>
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
+import { message } from "ant-design-vue";
 
 export default {
   name: "Category",
   setup() {
     const columns = ref([
       {
-        title: "一级分类名称",
+        title: "一級分類名稱",
         dataIndex: "c1Name",
         key: "c1Name",
       },
+      // {
+      //   title: "一級分類描述",
+      //   dataIndex: "c1Desc",
+      //   key: "c1Desc",
+      // },
       {
-        title: "一级分类描述",
-        dataIndex: "c1Desc",
-        key: "c1Desc",
-      },
-      {
-        title: "一级分类排序",
+        title: "一級分類排序",
         dataIndex: "c1Order",
         key: "c1Order",
       },
       {
-        title: "二级分类名称",
+        title: "二級分類名稱",
         dataIndex: "c2Name",
         key: "c2Name",
       },
       {
-        title: "二级分类排序",
+        title: "二級分類排序",
         dataIndex: "c2Order",
         key: "c2Order",
       },
       {
-        title: "三级分类名称",
+        title: "三級分類名稱",
         dataIndex: "c3Name",
         key: "c3Name",
       },
       {
-        title: "三级分类排序",
+        title: "三級分類排序",
         dataIndex: "c3Order",
         key: "c3Order",
       },
@@ -109,7 +110,7 @@ export default {
     const categories = computed(() => store.state.category_list);
     const bannerTotal = computed(() => store.state.category_total);
     const bannerInfo = computed(() => store.state.category_info);
-
+    const category_deleted = computed(() => store.state.category_deleted);
     // let C1CategoryID = ref("");
     // let C1Name = ref("");
     // let C1Desc = ref("");
@@ -156,9 +157,16 @@ export default {
     }
 
     async function DeleteCategory(record) {
-      let categoryId = record.c3CategoryId;
-      await store.dispatch("Delete_Category", categoryId);
-      GetCategoryList(currentCategory.value, page_size.value);
+      // let categoryId = record.c3CategoryId;
+      store.dispatch("Delete_Category", record.c3CategoryId).then(() => {
+        console.log(record.c3CategoryId);
+        if (record.c3CategoryId) {
+          message.info("操作成功");
+          //更改頁面上的顯示
+          record.category_deleted = !record.category_deleted;
+          console.log(record.category_deleted);
+        }
+      });
     }
 
     function showCategoryModal() {
@@ -193,8 +201,9 @@ export default {
       setTimeout(() => {
         category_visible.value = false;
         confirmCategoryLoading.value = false;
-      }, 2000);
+      }, 500);
       await GetCategoryList(currentCategory.value, page_size.value);
+      await message.info("操作成功");
     }
 
     async function UpdateCategory() {
@@ -242,6 +251,7 @@ export default {
       c3CategoryId,
       c3Name,
       c3Order,
+      category_deleted,
     };
   },
 };

@@ -1,8 +1,8 @@
 <template>
-  <h1>轮播图列表</h1>
+  <h1>Carousel圖檔編輯</h1>
   <div class="page_width">
     <div class="addBtn">
-      <a-button type="primary" @click="AddBanner"> 添加轮播图 </a-button>
+      <a-button type="primary" @click="AddBanner"> 添加Carousel</a-button>
     </div>
     <a-table
       :columns="columns"
@@ -11,14 +11,14 @@
     >
       <template v-slot:action="{ record }">
         <span>
-          <a @click="EditBanner(record)">编辑</a>
+          <a @click="EditBanner(record)">編輯</a>
           <span v-if="record.isDeleted">
             <a-divider type="vertical" />
             <a @click="DeleteBanner(record)">上架</a>
           </span>
           <span v-else>
             <a-divider type="vertical" />
-            <a @click="DeleteBanner(record)">删除</a>
+            <a @click="DeleteBanner(record)">刪除</a>
           </span>
         </span>
       </template>
@@ -27,20 +27,20 @@
       <div>
         <a-button type="primary" @click="showBannerModal"> </a-button>
         <a-modal
-          title="修改用户信息"
+          title="添加Carousel資訊"
           v-model:visible="banner_visible"
           :confirm-loading="confirmBannerLoading"
           @ok="handleBannerOk"
         >
           <p>
-            <a-input v-model:value="url" placeholder="请输入轮播图片地址" />
+            <a-input v-model:value="url" placeholder="請輸入Carousel地址" />
             <br /><br />
             <a-input
               v-model:value="redirectUrl"
-              placeholder="请输入轮播图跳转地址"
+              placeholder="請輸入Carousel跳轉地址"
             />
             <br /><br />
-            <a-input v-model:value="order" placeholder="请输入排序" />
+            <a-input v-model:value="order" placeholder="請輸入排序" />
             <br /><br />
           </p>
         </a-modal>
@@ -52,6 +52,7 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import { useStore } from "vuex";
+import { message } from "ant-design-vue";
 
 export default {
   name: "Banner",
@@ -64,7 +65,7 @@ export default {
         slots: { title: "customTitle", customRender: "productName" },
       },
       {
-        title: "跳转地址",
+        title: "跳轉地址",
         dataIndex: "redirectUrl",
         key: "redirectUrl",
       },
@@ -83,6 +84,8 @@ export default {
     let url = ref("");
     let redirectUrl = ref("");
     let order = ref("");
+    let createUser = ref("");
+    let updateUser = ref("");
     let confirmBannerLoading = ref(false);
     let currentBanner = ref(1);
     let banner_visible = ref(false);
@@ -117,8 +120,10 @@ export default {
 
     async function DeleteBanner(record) {
       let bannerId = record.bannerId;
+      // Unhandled error during execution of native event handler  可能是api格式沒接上
       await store.dispatch("Delete_Banner", bannerId);
       GetBannerList(currentBanner.value, page_size.value);
+      message.info("操作成功");
     }
 
     function showBannerModal() {
@@ -127,7 +132,7 @@ export default {
 
     async function AddBanner() {
       showBannerModal();
-      isEdit = false;
+      // isEdit = false;
     }
 
     async function EditBanner(record) {
@@ -138,6 +143,9 @@ export default {
       url.value = record.url;
       redirectUrl.value = record.redirectUrl;
       order.value = record.order;
+      createUser.value = record.createUser;
+      updateUser.value = record.updateUser;
+      message.info("操作成功");
       showBannerModal();
     }
 
@@ -148,8 +156,9 @@ export default {
         banner_visible.value = false;
         confirmBannerLoading.value = false;
         isEdit.value = false;
-      }, 2000);
+      }, 500);
       await GetBannerList(currentBanner.value, page_size.value);
+      message.info("操作成功");
     }
 
     async function UpdateBanner() {
@@ -184,6 +193,8 @@ export default {
       redirectUrl,
       order,
       isEdit,
+      createUser,
+      updateUser,
     };
   },
 };

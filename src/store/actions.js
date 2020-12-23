@@ -43,7 +43,7 @@ export default {
   async Update_User({commit},payload){
     await axios.post("http://localhost:9090/api/user/edit",payload).then(res=>{
       if (res["status"] === 200 && res["data"]["entity"]["code"] === 200) {
-        commit("Edit_User")
+        commit("Update_User")
       } else {
         console.log("更新用户失败")
       }
@@ -82,7 +82,7 @@ export default {
     console.log(payload)
     await axios.post("http://localhost:9090/api/product/edit",payload).then(res=>{
       if (res["status"] === 200 && res["data"]["entity"]["code"] === 200) {
-        commit("Edit_USer")
+        commit("Edit_User")
       } else {
         console.log("更新商品失败")
       }
@@ -145,7 +145,7 @@ export default {
     })
   },
   async Delete_Banner ({commit}, bannerId) {
-    const url ="http://localhost:9090/api/banner/delete/" + bannerId
+    const url ="http://localhost:9090/api/banner/delete?id=" + bannerId
     console.log(url)
     await axios.post(url).then(res => {
       if (res["status"] === 200 && res["data"]["entity"]["code"] === 200) {
@@ -186,7 +186,7 @@ export default {
   async Update_Order({commit},payload){
     await axios.post("http://localhost:9090/api/order/edit",payload).then(res=>{
       if (res["status"] === 200 && res["data"]["entity"]["code"] === 200) {
-        commit("Edit_USer")
+        commit("Edit_User")
       } else {
         console.log("更新商品失败")
       }

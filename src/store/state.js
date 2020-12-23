@@ -23,7 +23,7 @@ export default {
 
   category_list : [],
   category_total: 0,
-  category_deleted: false
+  category_deleted: false,
 }
 
 
